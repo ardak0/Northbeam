@@ -4,48 +4,457 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Northbeam</title>
-<meta name="description" content="Northbeam is building an AI assistant that helps small contractors find, understand and bid on public tenders in Türkiye.">
+<meta name="description" content="Northbeam is an AI assistant you share anything with: screenshots, photos, voice notes, messages. It understands what needs doing and follows through.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0e1116; --fg:#e8ecf1; --muted:#8b95a5; --accent:#6ea8ff; --line:#232a35; }
-  @media (prefers-color-scheme: light) {
-    :root { --bg:#f7f8fa; --fg:#14181f; --muted:#5b6574; --accent:#1f5fd6; --line:#dde2ea; }
+  :root {
+    --bg: #F1F4F2;
+    --surface: #FFFFFF;
+    --ink: #17213A;
+    --muted: #5A6478;
+    --line: #D3DAD5;
+    --beam: #E9A23B;
+    --beam-soft: #FBEBD2;
+    --done: #2E7A59;
+    --raw: #E3E7E4;
+    --display: "Bricolage Grotesque", system-ui, sans-serif;
+    --body: "Figtree", system-ui, sans-serif;
   }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0F1627;
+      --surface: #182136;
+      --ink: #E8ECF2;
+      --muted: #9AA4B8;
+      --line: #2A3550;
+      --beam: #F0B04F;
+      --beam-soft: #3A3020;
+      --done: #5CC08F;
+      --raw: #1F2A42;
+    }
+  }
+
   * { box-sizing: border-box; }
-  body { margin:0; min-height:100vh; display:flex; flex-direction:column; justify-content:center;
-         background:var(--bg); color:var(--fg);
-         font:16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  main { max-width:680px; margin:0 auto; padding:48px 24px 24px; }
-  .mark { display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--accent);
-          box-shadow:0 0 18px var(--accent); margin-right:10px; }
-  .tag { font-size:.85rem; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
-  h1 { font-size:2.25rem; letter-spacing:-0.02em; margin:0 0 12px; }
-  .lead { font-size:1.15rem; color:var(--fg); margin:0 0 16px; }
-  p { color:var(--muted); margin:0 0 16px; }
-  h2 { font-size:1rem; letter-spacing:.04em; text-transform:uppercase; margin:32px 0 12px; }
-  ul { list-style:none; padding:0; margin:0; border-top:1px solid var(--line); }
-  li { padding:14px 0; border-bottom:1px solid var(--line); color:var(--muted); }
-  li strong { display:block; color:var(--fg); font-weight:600; margin-bottom:2px; }
-  footer { max-width:680px; margin:0 auto; padding:0 24px 32px; color:var(--muted); font-size:.85rem; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 1.0625rem/1.6 var(--body);
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--beam); outline-offset: 3px; border-radius: 4px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0;
+  }
+  .mark {
+    font: 800 1.35rem/1 var(--display);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .mark svg { width: 22px; height: 22px; }
+  .top a.join {
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    padding: 9px 16px; border: 1.5px solid var(--ink); border-radius: 999px;
+  }
+  .top a.join:hover { background: var(--ink); color: var(--bg); }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 56px;
+    align-items: center;
+    padding: 48px 0 88px;
+  }
+  .hero h1 {
+    font: 800 clamp(2.6rem, 6vw, 4.6rem)/0.98 var(--display);
+    letter-spacing: -0.035em;
+    margin: 0 0 24px;
+  }
+  .hero p.lede {
+    font-size: 1.2rem; color: var(--muted); max-width: 30em; margin: 0 0 32px;
+  }
+  .cta {
+    display: inline-block;
+    background: var(--ink); color: var(--bg);
+    font: 600 1.05rem/1 var(--body);
+    padding: 17px 26px; border-radius: 999px; text-decoration: none;
+  }
+  .cta:hover { background: var(--done); }
+  .cta-note { display: block; margin-top: 14px; font-size: 0.92rem; color: var(--muted); }
+
+  /* Demo */
+  .demo {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    padding: 22px;
+  }
+  .demo-q { font-size: 0.92rem; color: var(--muted); margin: 2px 4px 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .chip {
+    font: 500 0.9rem/1 var(--body); color: var(--ink);
+    background: transparent; border: 1.5px solid var(--line);
+    padding: 9px 13px; border-radius: 999px; cursor: pointer;
+  }
+  .chip:hover { border-color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .flow { display: grid; gap: 14px; }
+  .raw {
+    background: var(--raw);
+    border-radius: 18px;
+    padding: 18px 20px;
+    transform: rotate(-1.4deg);
+    font-size: 0.98rem;
+    min-height: 92px;
+  }
+  .raw .src { font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .raw .src svg { width: 16px; height: 16px; flex: none; }
+  .raw .body { margin: 0; }
+  .raw.is-voice .body { font-style: italic; }
+  .wave { display: flex; gap: 3px; align-items: center; height: 22px; margin-bottom: 6px; }
+  .wave i { display: block; width: 3px; border-radius: 2px; background: var(--muted); }
+
+  .beam {
+    height: 34px; position: relative; margin-left: 30px;
+  }
+  .beam::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(var(--line), var(--beam));
+    border-radius: 2px;
+  }
+  .beam span {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    font-size: 0.82rem; color: var(--muted);
+  }
+
+  .handled {
+    border: 1.5px solid var(--ink);
+    border-radius: 18px;
+    padding: 18px 20px 14px;
+    background: var(--surface);
+    box-shadow: 6px 6px 0 var(--beam);
+  }
+  .handled h3 { font: 700 1.2rem/1.2 var(--display); margin: 0 0 12px; letter-spacing: -0.01em; }
+  .handled ul { list-style: none; margin: 0; padding: 0; }
+  .handled li {
+    display: grid; grid-template-columns: 22px 1fr; gap: 10px;
+    padding: 8px 0; border-top: 1px solid var(--line); font-size: 0.97rem;
+  }
+  .handled li:first-child { border-top: 0; }
+  .handled li svg { width: 18px; height: 18px; margin-top: 3px; color: var(--done); }
+  .handled li.wait svg { color: var(--beam); }
+
+  .swap { animation: settle .45s ease-out; }
+  @keyframes settle { from { opacity: 0; translate: 0 6px; } to { opacity: 1; translate: 0 0; } }
+
+  /* Sections */
+  section.block { padding: 80px 0; border-top: 1px solid var(--line); }
+  .block h2 {
+    font: 800 clamp(1.9rem, 3.6vw, 2.8rem)/1.05 var(--display);
+    letter-spacing: -0.03em; margin: 0 0 16px; max-width: 18em;
+  }
+  .block p.intro { color: var(--muted); max-width: 36em; margin: 0 0 40px; font-size: 1.1rem; }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  .steps li { counter-increment: s; }
+  .steps li::before {
+    content: counter(s);
+    display: grid; place-items: center;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--beam-soft); color: var(--ink);
+    font: 800 1.2rem/1 var(--display); margin-bottom: 18px;
+  }
+  .steps h3 { font: 700 1.3rem/1.2 var(--display); margin: 0 0 8px; }
+  .steps p { margin: 0; color: var(--muted); }
+
+  /* Examples list */
+  .pairs { margin: 0; padding: 0; list-style: none; }
+  .pairs li {
+    display: grid; grid-template-columns: 1fr 1.3fr; gap: 32px;
+    padding: 20px 0; border-top: 1px solid var(--line);
+  }
+  .pairs li:last-child { border-bottom: 1px solid var(--line); }
+  .pairs .in { font-weight: 600; }
+  .pairs .out { color: var(--muted); }
+
+  /* Ask */
+  .asks { display: flex; flex-wrap: wrap; gap: 12px; }
+  .asks q {
+    quotes: none;
+    font: 500 1.15rem/1.35 var(--display);
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 14px 20px; border-radius: 22px 22px 22px 6px;
+  }
+
+  /* Privacy */
+  .promises { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 48px; }
+  .promises h3 { font: 700 1.15rem/1.25 var(--display); margin: 0 0 6px; }
+  .promises p { margin: 0; color: var(--muted); }
+
+  /* Closing */
+  .closing { text-align: left; padding: 96px 0; border-top: 1px solid var(--line); }
+  .closing h2 {
+    font: 800 clamp(2.2rem, 5vw, 3.8rem)/1 var(--display);
+    letter-spacing: -0.035em; margin: 0 0 20px; max-width: 14em;
+  }
+  .closing p { color: var(--muted); margin: 0 0 32px; max-width: 34em; }
+
+  footer {
+    padding: 28px 0 40px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+    font-size: 0.92rem; color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 24px 0 64px; }
+    .steps { grid-template-columns: 1fr; gap: 32px; }
+    .pairs li { grid-template-columns: 1fr; gap: 4px; }
+    .promises { grid-template-columns: 1fr; }
+    section.block { padding: 64px 0; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 16px; }
+    .demo { padding: 16px; border-radius: 22px; }
+    .top a.join { padding: 8px 13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .swap { animation: none; }
+    .raw { transform: none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <div class="tag"><span class="mark"></span>Early stage</div>
-  <h1>Northbeam</h1>
-  <p class="lead">An AI assistant that helps small contractors find, understand and bid on public tenders in Türkiye.</p>
-  <p>Public tender documents are long and full of conditions. Small firms lose bids over a missed requirement, not because they weren't qualified. We're building a tool, powered by Claude, that does the reading for them.</p>
 
-  <h2>What we're building</h2>
-  <ul>
-    <li><strong>Tender monitoring</strong>Surface new tenders that match your trade, region and size.</li>
-    <li><strong>Plain-language summaries</strong>Turn dense tender documents into the requirements, deadlines and risks that matter.</li>
-    <li><strong>Eligibility check</strong>Compare a tender's conditions against your company's profile and flag gaps early.</li>
-    <li><strong>Bid checklist</strong>Generate a step-by-step list of what to prepare and submit.</li>
-  </ul>
+<div class="wrap">
+  <header class="top">
+    <a class="mark" href="#" aria-label="Northbeam home">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2v20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M12 2l-5 7h10l-5-7z" fill="#E9A23B"/>
+      </svg>
+      Northbeam
+    </a>
+    <a class="join" href="#early-access">Get early access</a>
+  </header>
 
-  <h2>Status</h2>
-  <p>In early development. Based in Istanbul.</p>
-</main>
-<footer>&copy; 2026 Northbeam</footer>
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Share anything. It gets handled.</h1>
+        <p class="lede">Screenshots, photos of bills, voice notes, messages from the school group. Send them to Northbeam and it works out what needs doing, adds it to your calendar, reminds you at the right moment and drafts the replies.</p>
+        <a class="cta" href="#early-access">Get early access</a>
+        <span class="cta-note">Works from WhatsApp and your phone's share button.</span>
+      </div>
+
+      <div class="demo" aria-label="Example of what Northbeam does">
+        <p class="demo-q" id="demo-q">Pick something you'd send it:</p>
+        <div class="chips" role="group" aria-labelledby="demo-q" id="chips"></div>
+        <div class="flow" aria-live="polite">
+          <div class="raw" id="raw"></div>
+          <div class="beam" aria-hidden="true"><span>Northbeam reads it</span></div>
+          <div class="handled" id="handled"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="how">
+      <h2 id="how">No typing, no sorting.</h2>
+      <p class="intro">You don't fill in forms or pick categories. You send the thing as it is, and Northbeam takes it from there.</p>
+      <ol class="steps">
+        <li>
+          <h3>Share it</h3>
+          <p>Forward a message, share a screenshot, snap a photo or record a voice note. Any language, any mess.</p>
+        </li>
+        <li>
+          <h3>It understands</h3>
+          <p>Dates, amounts, places, people and deadlines are pulled out and turned into events, reminders and to-dos.</p>
+        </li>
+        <li>
+          <h3>It follows through</h3>
+          <p>It nudges you before things are due, drafts the replies and keeps track of what's still open. You approve with one tap.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="block" aria-labelledby="send">
+      <h2 id="send">The things you'd otherwise forget.</h2>
+      <p class="intro">A few of the everyday things people send it.</p>
+      <ul class="pairs">
+        <li><span class="in">A screenshot of a concert announcement</span><span class="out">Added to your calendar, with a reminder the week before to buy tickets.</span></li>
+        <li><span class="in">A photo of a bill or a fine</span><span class="out">A reminder three days before it's due, and a flag if the amount looks unusual.</span></li>
+        <li><span class="in">The receipt for something you bought</span><span class="out">Saved with its warranty and return dates, so you can find it the day something breaks.</span></li>
+        <li><span class="in">A message in the parents' group</span><span class="out">The date, the form to sign and the money to send, each with its own reminder.</span></li>
+        <li><span class="in">A friend asking to meet up</span><span class="out">Your free times checked and a reply drafted, waiting for your approval.</span></li>
+        <li><span class="in">A recipe you scrolled past</span><span class="out">Saved to your recipes, with the ingredients ready to add to your shopping list.</span></li>
+      </ul>
+    </section>
+
+    <section class="block" aria-labelledby="ask">
+      <h2 id="ask">Ask it later.</h2>
+      <p class="intro">Everything you've sent stays searchable, so you can just ask.</p>
+      <div class="asks">
+        <q>When does my car insurance end?</q>
+        <q>What was the restaurant Ayşe recommended?</q>
+        <q>Do I have anything due this week?</q>
+        <q>How much did we spend on school this term?</q>
+        <q>Where's the receipt for the washing machine?</q>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="privacy">
+      <h2 id="privacy">Your life admin stays yours.</h2>
+      <p class="intro">Northbeam handles personal things, so privacy is part of the design, not a setting.</p>
+      <div class="promises">
+        <div>
+          <h3>Nothing happens without you</h3>
+          <p>Replies, calendar changes and anything sent on your behalf wait for your approval.</p>
+        </div>
+        <div>
+          <h3>Delete anything, anytime</h3>
+          <p>Remove a single item or your whole account, and it's gone.</p>
+        </div>
+        <div>
+          <h3>Never sold, never used for ads</h3>
+          <p>Your data is used only to help you, and nothing else.</p>
+        </div>
+        <div>
+          <h3>It shows what it understood</h3>
+          <p>Every date and amount it picks up is shown back to you, and it asks when it isn't sure.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing" id="early-access" aria-labelledby="ea">
+      <h2 id="ea">Be one of the first to try it.</h2>
+      <p>Northbeam is in early development in Istanbul, built on Claude. We're inviting a small group of people to use it every day and help shape it.</p>
+      <!-- Replace this address with the inbox you want sign-ups to go to -->
+      <a class="cta" href="mailto:hello@northbeam.cloud?subject=Northbeam%20early%20access">Request early access</a>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 Northbeam</span>
+    <span>Istanbul</span>
+  </footer>
+</div>
+
+<script>
+  const icons = {
+    msg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+    photo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg>',
+    mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+    shot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+  };
+
+  const examples = [
+    {
+      label: "Parents' group message",
+      icon: "msg", src: "Message in “4-B Parents”",
+      body: "Dear parents, the museum trip is on Thursday the 14th. Please sign the permission form by Friday and send 200 TL with your child.",
+      title: "Museum trip on Thursday the 14th",
+      items: [
+        ["check", "Added to your calendar for Thursday the 14th"],
+        ["check", "Reminder on Friday morning to sign the permission form"],
+        ["check", "To-do for Wednesday night: put 200 TL in the school bag"]
+      ]
+    },
+    {
+      label: "Photo of a bill",
+      icon: "photo", src: "Photo",
+      body: "Electricity bill. Amount due: 1,240.50 TL. Due date: 22 October.",
+      title: "Electricity bill, due 22 October",
+      items: [
+        ["check", "Reminder on 19 October to pay 1,240.50 TL"],
+        ["check", "Flagged: about 18% higher than last month"],
+        ["check", "Saved with your other bills"]
+      ]
+    },
+    {
+      label: "Voice note",
+      icon: "mic", src: "Voice note, 0:07", voice: true,
+      body: "“Remind me to call Mom on Sunday, and to get her flowers on the way.”",
+      title: "Sunday: Mom",
+      items: [
+        ["check", "Reminder on Sunday at 11:00 to call Mom"],
+        ["check", "To-do: buy flowers before you visit"]
+      ]
+    },
+    {
+      label: "Screenshot of a receipt",
+      icon: "shot", src: "Screenshot",
+      body: "Order confirmed. Laptop, purchased 3 March 2026. 2-year manufacturer warranty.",
+      title: "Laptop receipt and warranty",
+      items: [
+        ["check", "Saved the receipt and warranty details"],
+        ["check", "Warranty ends 3 March 2028"],
+        ["check", "Reminder a month before the warranty ends"]
+      ]
+    },
+    {
+      label: "A friend's message",
+      icon: "msg", src: "Message from Ayşe",
+      body: "Dinner next week? Thursday works for me 🙂",
+      title: "Dinner with Ayşe",
+      items: [
+        ["check", "You're free on Thursday after 19:00"],
+        ["clock", "Draft reply: “Thursday at 19:30 works! Where shall we go?”"],
+        ["clock", "Waiting for you to approve and send"]
+      ]
+    }
+  ];
+
+  const chips = document.getElementById("chips");
+  const raw = document.getElementById("raw");
+  const handled = document.getElementById("handled");
+
+  function esc(s) {
+    return s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+
+  function wave() {
+    const h = [6, 12, 18, 10, 20, 14, 8, 16, 22, 12, 6, 14, 18, 10, 6, 12, 16, 8];
+    return '<div class="wave" aria-hidden="true">' + h.map(x => `<i style="height:${x}px"></i>`).join("") + "</div>";
+  }
+
+  function show(i) {
+    const ex = examples[i];
+    [...chips.children].forEach((c, j) => c.setAttribute("aria-pressed", j === i ? "true" : "false"));
+    raw.className = "raw" + (ex.voice ? " is-voice" : "");
+    raw.innerHTML =
+      `<div class="src">${icons[ex.icon]}<span>${esc(ex.src)}</span></div>` +
+      (ex.voice ? wave() : "") +
+      `<p class="body">${esc(ex.body)}</p>`;
+    handled.innerHTML =
+      `<h3>${esc(ex.title)}</h3><ul>` +
+      ex.items.map(([ic, t]) => `<li class="${ic === "clock" ? "wait" : ""}">${icons[ic]}<span>${esc(t)}</span></li>`).join("") +
+      "</ul>";
+    [raw, handled].forEach(el => { el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); });
+  }
+
+  examples.forEach((ex, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = ex.label;
+    b.addEventListener("click", () => show(i));
+    chips.appendChild(b);
+  });
+
+  show(0);
+</script>
 </body>
 </html>
